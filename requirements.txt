@@ -1,0 +1,8 @@
+pyproj
+moderngl
+Shapely
+#owslib
+PILLOW
+diskcache
+pyrr
+moderngl_window #TODO generify
