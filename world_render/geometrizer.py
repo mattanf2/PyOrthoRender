@@ -31,7 +31,7 @@ class TileBuffers:  # tile graphic buffers
         self._total_vertices += len(vertices)
         self._vertices_lists.append(vertices)
         self._texcoords_lists.append(texcoords)
-        self._indices_lists.append(indices)
+        self._indices_lists.append(indices.astype(np.uint16))
 
     @property
     def vertices(self):
@@ -159,7 +159,10 @@ class TileGeometryBuilder:
             self._filter_vertices_x_aligned(corners, (tile.x + 1) * factor, (tile.y + 1) * factor, (tile.y) * factor),
             self._filter_vertices_y_aligned(corners, (tile.y + 0) * factor, (tile.x + 1) * factor, (tile.x) * factor))
         vertices = np.array(list(vertices), dtype=np.float32)
-        texcoords = (vertices - (tile.x * factor, tile.y * factor)) / factor
+
+        full_factor = 2 ** (self._max_zoom_level - buffer.tile.zoom)
+        texcoords = (vertices - (buffer.tile.x * full_factor, buffer.tile.y * full_factor)) / full_factor
+        texcoords[:,0] = 1 - texcoords[:,0]
 
         num_vertices = len(vertices)
         indices = np.arange(3, (num_vertices) * 3)
